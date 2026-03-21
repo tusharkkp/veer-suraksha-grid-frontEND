@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSystem } from '@/contexts/SystemContext';
-import { Siren, Ambulance, UserX } from 'lucide-react';
+import { Siren, Truck, UserX } from 'lucide-react';
 
 const SOSPanel: React.FC = () => {
   const { t, lang } = useLanguage();
