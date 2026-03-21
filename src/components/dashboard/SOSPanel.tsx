@@ -29,7 +29,7 @@ const SOSPanel: React.FC = () => {
           </div>
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2">
-              <Ambulance className="h-4 w-4 text-[hsl(var(--sos-red))]"/>
+              <Truck className="h-4 w-4 text-[hsl(var(--sos-red))]"/>
               <span className="font-semibold">{t('sos.dispatch')}</span>
             </p>
             <p className="text-xs text-muted-foreground">
