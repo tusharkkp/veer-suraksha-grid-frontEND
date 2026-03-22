@@ -5,7 +5,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { BarChart3, Users, Truck, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ChartBar, Users, Truck, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
 
 const AnalyticsPanel: React.FC = () => {
   const { t } = useLanguage();
