@@ -21,6 +21,24 @@ const translations: Record<string, Record<Lang, string>> = {
   'nav.sos': { mr: 'आपत्कालीन', en: 'Emergency' },
   'nav.blackbox': { mr: 'वीरब्लॅकबॉक्स', en: 'VeerBlackBox' },
   'nav.veerplan': { mr: 'वीरप्लान', en: 'VeerPlan' },
+  'nav.analytics': { mr: 'विश्लेषण', en: 'Analytics' },
+
+  // Analytics
+  'analytics.title': { mr: 'विश्लेषण आणि अहवाल', en: 'Analytics & Reports' },
+  'analytics.total_assets': { mr: 'एकूण मालमत्ता', en: 'Total Assets' },
+  'analytics.active_workers': { mr: 'सक्रिय कर्मचारी', en: 'Active Workers' },
+  'analytics.machines_in_use': { mr: 'वापरातील यंत्रे', en: 'Machines In Use' },
+  'analytics.tasks_zone': { mr: 'कार्य क्षेत्र (आज)', en: 'Tasks Zone (Today)' },
+  'analytics.pending_alerts': { mr: 'प्रलंबित सूचना', en: 'Pending Alerts' },
+  'analytics.avg_risk': { mr: 'सरासरी जोखीम', en: 'Avg Risk' },
+  'analytics.weekly_tasks': { mr: 'साप्ताहिक कार्ये आणि सूचना', en: 'Weekly Tasks & Alerts' },
+  'analytics.tasks_done': { mr: 'कार्ये पूर्ण', en: 'Tasks Done' },
+  'analytics.alerts_label': { mr: 'सूचना', en: 'Alerts' },
+  'analytics.risk_trend': { mr: 'सरासरी जोखीम आणि H₂S प्रवृत्ती', en: 'Avg Risk & H₂S Trend' },
+  'analytics.zone_dist': { mr: 'क्षेत्र वितरण', en: 'Zone Distribution' },
+  'analytics.task_status': { mr: 'कार्य स्थिती वितरण', en: 'Task Status Distribution' },
+  'analytics.weekly_usage': { mr: 'साप्ताहिक कर्मचारी आणि यंत्र वापर', en: 'Weekly Workers & Machine Usage' },
+  'analytics.completed': { mr: 'पूर्ण', en: 'Completed' },
 
   // Risk
   'risk.high': { mr: 'उच्च जोखीम', en: 'High Risk' },

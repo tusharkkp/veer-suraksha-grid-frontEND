@@ -77,6 +77,7 @@ const AdminDashboard: React.FC = () => {
         <div className="border rounded-b-md rounded-tr-md bg-card p-0 h-full overflow-y-auto">
           <div className="p-1">
             {activeTab === 'map' && <MapView />}
+            {activeTab === 'analytics' && <AnalyticsPanel />}
             {activeTab === 'telemetry' && <TelemetryPanel />}
             {activeTab === 'workers' && <WorkerPanel />}
             {activeTab === 'fleet' && <FleetEyePanel />}
