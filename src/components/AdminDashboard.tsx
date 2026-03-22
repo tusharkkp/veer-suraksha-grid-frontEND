@@ -12,7 +12,7 @@ import SOSPanel from './dashboard/SOSPanel';
 import BlackBoxPanel from './dashboard/BlackBoxPanel';
 import VeerPlanPanel from './dashboard/VeerPlanPanel';
 
-type Tab = 'map' | 'telemetry' | 'workers' | 'fleet' | 'veerpass' | 'comms' | 'sos' | 'blackbox' | 'veerplan';
+type Tab = 'map' | 'analytics' | 'telemetry' | 'workers' | 'fleet' | 'veerpass' | 'comms' | 'sos' | 'blackbox' | 'veerplan';
 
 const AdminDashboard: React.FC = () => {
   const { t } = useLanguage();
