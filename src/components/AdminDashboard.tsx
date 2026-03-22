@@ -21,6 +21,7 @@ const AdminDashboard: React.FC = () => {
 
   const tabs: { id: Tab; icon: React.ReactNode; label: string; alert?: boolean }[] = [
     { id: 'map', icon: <MapPin className="h-4 w-4"/>, label: t('nav.map') },
+    { id: 'analytics', icon: <BarChart3 className="h-4 w-4"/>, label: t('nav.analytics') },
     { id: 'telemetry', icon: <Activity className="h-4 w-4"/>, label: t('nav.telemetry') },
     { id: 'workers', icon: <Users className="h-4 w-4"/>, label: t('nav.workers') },
     { id: 'fleet', icon: <Truck className="h-4 w-4"/>, label: t('nav.fleet') },
