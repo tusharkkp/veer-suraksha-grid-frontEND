@@ -89,7 +89,7 @@ const AnalyticsPanel: React.FC = () => {
     <div className="p-3 space-y-4">
       {/* Title */}
       <h2 className="text-sm font-bold flex items-center gap-2">
-        <BarChart3 className="h-4 w-4" />
+        <ChartBar className="h-4 w-4" />
         {t('analytics.title')}
       </h2>
 
