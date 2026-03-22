@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSystem } from '@/contexts/SystemContext';
-import { MapPin, Activity, Users, Truck, ShieldCheck, MessageSquare, Siren, Archive, Calendar } from 'lucide-react';
+import { MapPin, Activity, Users, Truck, ShieldCheck, MessageSquare, Siren, Archive, Calendar, BarChart3 } from 'lucide-react';
 import MapView from './dashboard/MapView';
 import TelemetryPanel from './dashboard/TelemetryPanel';
+import AnalyticsPanel from './dashboard/AnalyticsPanel';
 import WorkerPanel from './dashboard/WorkerPanel';
 import FleetEyePanel from './dashboard/FleetEyePanel';
 import VeerPassPanel from './dashboard/VeerPassPanel';

@@ -13,7 +13,7 @@ const AnalyticsPanel: React.FC = () => {
 
   const totalAssets = assets.length;
   const activeWorkers = workers.filter(w => w.status === 'active').length;
-  const machinesInUse = machines.filter(m => m.status === 'in-use').length;
+  const machinesInUse = machines.filter(m => m.status === 'inuse').length;
   const tasksCompleted = assets.filter(a => a.approvalStatus === 'approved').length;
   const pendingTasks = assets.filter(a => a.approvalStatus === 'pending').length;
   const avgRisk = Math.round((assets.reduce((sum, a) => {
