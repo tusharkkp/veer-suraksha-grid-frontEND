@@ -5,7 +5,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { BarChart3, Users, Truck, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ChartBar, Users, Truck, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
 
 const AnalyticsPanel: React.FC = () => {
   const { t } = useLanguage();
@@ -77,7 +77,7 @@ const AnalyticsPanel: React.FC = () => {
   ];
 
   const statCards = [
-    { icon: <BarChart3 className="h-4 w-4 text-primary" />, value: totalAssets, label: t('analytics.total_assets') },
+    { icon: <ChartBar className="h-4 w-4 text-primary" />, value: totalAssets, label: t('analytics.total_assets') },
     { icon: <Users className="h-4 w-4 text-primary" />, value: activeWorkers, label: t('analytics.active_workers') },
     { icon: <Truck className="h-4 w-4 text-primary" />, value: machinesInUse, label: t('analytics.machines_in_use') },
     { icon: <CheckCircle className="h-4 w-4 text-[hsl(var(--risk-green))]" />, value: tasksCompleted, label: t('analytics.tasks_zone') },
@@ -89,7 +89,7 @@ const AnalyticsPanel: React.FC = () => {
     <div className="p-3 space-y-4">
       {/* Title */}
       <h2 className="text-sm font-bold flex items-center gap-2">
-        <BarChart3 className="h-4 w-4" />
+        <ChartBar className="h-4 w-4" />
         {t('analytics.title')}
       </h2>
 
