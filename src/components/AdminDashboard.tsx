@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSystem } from '@/contexts/SystemContext';
-import { MapPin, Activity, Users, Truck, ShieldCheck, MessageSquare, Siren, Archive, Calendar } from 'lucide-react';
+import { MapPin, Activity, Users, Truck, ShieldCheck, MessageSquare, Siren, Archive, Calendar, BarChart3 } from 'lucide-react';
 import MapView from './dashboard/MapView';
 import TelemetryPanel from './dashboard/TelemetryPanel';
+import AnalyticsPanel from './dashboard/AnalyticsPanel';
 import WorkerPanel from './dashboard/WorkerPanel';
 import FleetEyePanel from './dashboard/FleetEyePanel';
 import VeerPassPanel from './dashboard/VeerPassPanel';
@@ -12,7 +13,7 @@ import SOSPanel from './dashboard/SOSPanel';
 import BlackBoxPanel from './dashboard/BlackBoxPanel';
 import VeerPlanPanel from './dashboard/VeerPlanPanel';
 
-type Tab = 'map' | 'telemetry' | 'workers' | 'fleet' | 'veerpass' | 'comms' | 'sos' | 'blackbox' | 'veerplan';
+type Tab = 'map' | 'analytics' | 'telemetry' | 'workers' | 'fleet' | 'veerpass' | 'comms' | 'sos' | 'blackbox' | 'veerplan';
 
 const AdminDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -21,6 +22,7 @@ const AdminDashboard: React.FC = () => {
 
   const tabs: { id: Tab; icon: React.ReactNode; label: string; alert?: boolean }[] = [
     { id: 'map', icon: <MapPin className="h-4 w-4"/>, label: t('nav.map') },
+    { id: 'analytics', icon: <BarChart3 className="h-4 w-4"/>, label: t('nav.analytics') },
     { id: 'telemetry', icon: <Activity className="h-4 w-4"/>, label: t('nav.telemetry') },
     { id: 'workers', icon: <Users className="h-4 w-4"/>, label: t('nav.workers') },
     { id: 'fleet', icon: <Truck className="h-4 w-4"/>, label: t('nav.fleet') },
@@ -76,6 +78,7 @@ const AdminDashboard: React.FC = () => {
         <div className="border rounded-b-md rounded-tr-md bg-card p-0 h-full overflow-y-auto">
           <div className="p-1">
             {activeTab === 'map' && <MapView />}
+            {activeTab === 'analytics' && <AnalyticsPanel />}
             {activeTab === 'telemetry' && <TelemetryPanel />}
             {activeTab === 'workers' && <WorkerPanel />}
             {activeTab === 'fleet' && <FleetEyePanel />}
