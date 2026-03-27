@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSystem, type Asset } from '@/contexts/SystemContext';
-import { MapPin, X, Shield, Thermometer, Battery, Wind } from 'lucide-react';
+import { MapPin, X, Shield, Plus } from 'lucide-react';
 
 const ASSET_POSITIONS: Record<string, { x: number; y: number }> = {
   'SMC-MH-001': { x: 65, y: 55 },
@@ -20,33 +20,72 @@ const zoneColors: Record<string, string> = {
 
 const MapView: React.FC = () => {
   const { t, lang } = useLanguage();
-  const { assets, selectedAsset, setSelectedAsset, workers } = useSystem();
+  const { assets, selectedAsset, setSelectedAsset, workers, addTask } = useSystem();
   const selected = assets.find(a => a.id === selectedAsset);
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTaskAsset, setNewTaskAsset] = useState('');
+  const [newTaskName, setNewTaskName] = useState('');
+  const [newTaskNameMr, setNewTaskNameMr] = useState('');
+
+  const handleAddTask = () => {
+    if (newTaskAsset && newTaskName) {
+      addTask(newTaskAsset, newTaskName, newTaskNameMr || newTaskName);
+      setShowAddTask(false);
+      setNewTaskAsset('');
+      setNewTaskName('');
+      setNewTaskNameMr('');
+    }
+  };
 
   return (
     <div className="gov-card p-4 h-full flex flex-col">
-      <h3 className="panel-header flex items-center gap-2">
-        <MapPin className="h-4 w-4" />{t('nav.map')} — {t('app.smc')}
-      </h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="panel-header flex items-center gap-2 mb-0">
+          <MapPin className="h-4 w-4" />{t('nav.map')} — {t('app.smc')}
+        </h3>
+        <button
+          onClick={() => setShowAddTask(!showAddTask)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded text-xs font-semibold active:scale-95 transition-all"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {lang === 'mr' ? 'कार्य जोडा' : 'Add Task'}
+        </button>
+      </div>
+
+      {/* Add Task Dialog */}
+      {showAddTask && (
+        <div className="mb-3 p-3 bg-muted/40 border rounded-md space-y-2">
+          <p className="text-xs font-semibold">{lang === 'mr' ? 'नवीन कार्य तयार करा' : 'Create New Task'}</p>
+          <select value={newTaskAsset} onChange={e => setNewTaskAsset(e.target.value)} className="w-full p-2 text-xs border rounded bg-background">
+            <option value="">{lang === 'mr' ? 'मालमत्ता निवडा...' : 'Select Asset...'}</option>
+            {assets.map(a => <option key={a.id} value={a.id}>{a.id} — {lang === 'mr' ? a.locationMr : a.location}</option>)}
+          </select>
+          <input value={newTaskName} onChange={e => setNewTaskName(e.target.value)} placeholder={lang === 'mr' ? 'कार्य नाव (English)' : 'Task Name (English)'} className="w-full p-2 text-xs border rounded bg-background" />
+          <input value={newTaskNameMr} onChange={e => setNewTaskNameMr(e.target.value)} placeholder={lang === 'mr' ? 'कार्य नाव (मराठी)' : 'Task Name (Marathi)'} className="w-full p-2 text-xs border rounded bg-background" />
+          <div className="flex gap-2">
+            <button onClick={handleAddTask} disabled={!newTaskAsset || !newTaskName} className="flex-1 py-1.5 bg-primary text-primary-foreground rounded text-xs font-semibold disabled:opacity-50">
+              {lang === 'mr' ? 'तयार करा' : 'Create'}
+            </button>
+            <button onClick={() => setShowAddTask(false)} className="flex-1 py-1.5 border rounded text-xs">{lang === 'mr' ? 'रद्द करा' : 'Cancel'}</button>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 flex gap-4 min-h-0">
         {/* Map area */}
         <div className="flex-1 relative bg-[hsl(var(--gov-blue-light))] rounded-md border overflow-hidden">
-          {/* Simplified Solapur map grid */}
           <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-            {/* Grid lines */}
             {[20,40,60,80].map(v => (
               <React.Fragment key={v}>
                 <line x1={v} y1="0" x2={v} y2="100" stroke="hsl(215 70% 35% / 0.08)" strokeWidth="0.3"/>
                 <line x1="0" y1={v} x2="100" y2={v} stroke="hsl(215 70% 35% / 0.08)" strokeWidth="0.3"/>
               </React.Fragment>
             ))}
-            {/* Roads */}
             <line x1="10" y1="50" x2="90" y2="50" stroke="hsl(215 20% 70%)" strokeWidth="0.8" strokeDasharray="2,1"/>
             <line x1="50" y1="10" x2="50" y2="90" stroke="hsl(215 20% 70%)" strokeWidth="0.8" strokeDasharray="2,1"/>
             <line x1="20" y1="25" x2="80" y2="75" stroke="hsl(215 20% 75%)" strokeWidth="0.5" strokeDasharray="1.5,1"/>
             <text x="50" y="96" textAnchor="middle" fontSize="3" fill="hsl(215 30% 50%)" fontWeight="600">सोलापूर / Solapur</text>
 
-            {/* Asset markers */}
             {assets.map(asset => {
               const pos = ASSET_POSITIONS[asset.id];
               if (!pos) return null;
@@ -65,7 +104,6 @@ const MapView: React.FC = () => {
             })}
           </svg>
 
-          {/* Legend */}
           <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur rounded p-2 text-xs space-y-1">
             <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]"/>{t('zone.red')}</div>
             <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#eab308]"/>{t('zone.yellow')}</div>
@@ -107,7 +145,6 @@ const MapView: React.FC = () => {
               </div>
             </div>
 
-            {/* Zone rule */}
             <div className={`p-2 rounded text-xs font-medium ${
               selected.zone === 'red' ? 'bg-[hsl(var(--risk-red-bg))] text-[hsl(var(--risk-red))]' :
               selected.zone === 'yellow' ? 'bg-[hsl(var(--risk-yellow-bg))] text-[hsl(var(--risk-yellow))]' :
@@ -118,20 +155,31 @@ const MapView: React.FC = () => {
                selected.zone === 'yellow' ? t('general.machine_first') : t('general.controlled_manual')}
             </div>
 
-            {/* Live sensors */}
+            {/* VeerProbe Readings */}
             <div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase">{t('nav.telemetry')}</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">{lang === 'mr' ? 'वीरप्रोब' : 'VeerProbe'}</span>
               <div className="grid grid-cols-2 gap-1.5 mt-1">
-                <SensorMini label="H₂S" value={selected.sensors.h2s} unit="ppm" max={25} source="VeerGuard"/>
+                <SensorMini label="H₂S" value={selected.sensors.h2s} unit="ppm" max={25} source="VeerProbe"/>
                 <SensorMini label="CH₄" value={selected.sensors.ch4} unit="%" max={5} source="VeerProbe"/>
-                <SensorMini label="CO" value={selected.sensors.co} unit="ppm" max={35} source="VeerGuard"/>
-                <SensorMini label="O₂" value={selected.sensors.o2} unit="%" max={21} invert source="VeerProbe"/>
-                <SensorMini label={lang === 'mr' ? 'तापमान' : 'Temp'} value={selected.sensors.temp} unit="°C" max={40} source="VeerGuard"/>
-                <SensorMini label={lang === 'mr' ? 'बॅटरी' : 'Battery'} value={selected.sensors.battery} unit="%" max={100} invert source="VeerGuard"/>
+                <SensorMini label="CO" value={selected.sensors.co} unit="ppm" max={35} source="VeerProbe"/>
+                <SensorMini label={lang === 'mr' ? 'तापमान' : 'Temp'} value={selected.sensors.temp} unit="°C" max={40} source="VeerProbe"/>
+                <SensorMini label={lang === 'mr' ? 'आर्द्रता' : 'Humidity'} value={selected.sensors.humidity} unit="%" max={99} source="VeerProbe"/>
+                <SensorMini label={lang === 'mr' ? 'पाणी खोली' : 'Water Depth'} value={selected.sensors.waterDepth} unit="m" max={5} source="VeerProbe"/>
               </div>
             </div>
 
-            {/* Assigned worker */}
+            {/* VeerGuard Readings */}
+            <div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase">{lang === 'mr' ? 'वीरगार्ड' : 'VeerGuard'}</span>
+              <div className="grid grid-cols-2 gap-1.5 mt-1">
+                <SensorMini label="O₂" value={selected.sensors.o2} unit="%" max={21} invert source="VeerGuard"/>
+                <SensorMini label={lang === 'mr' ? 'बॅटरी' : 'Battery'} value={selected.sensors.battery} unit="%" max={100} invert source="VeerGuard"/>
+              </div>
+              <div className={`mt-1.5 text-[10px] px-2 py-1 rounded ${selected.sensors.mpu6050Fallback ? 'bg-[hsl(var(--risk-red-bg))] text-[hsl(var(--risk-red))]' : 'bg-muted text-muted-foreground'}`}>
+                MPU6050: {selected.sensors.mpu6050Fallback ? (lang === 'mr' ? 'फॉलबॅक सक्रिय!' : 'FALLBACK ACTIVE!') : (lang === 'mr' ? 'सामान्य' : 'Normal')}
+              </div>
+            </div>
+
             {selected.assignedWorker && (() => {
               const w = workers.find(w => w.id === selected.assignedWorker);
               return w ? (
@@ -157,7 +205,7 @@ const SensorMini: React.FC<{ label: string; value: number; unit: string; max: nu
       <div className="flex justify-between items-baseline">
         <span className="font-medium">{label}</span>
         <span className={`font-mono font-bold ${danger ? 'text-[hsl(var(--risk-red))]' : warn ? 'text-[hsl(var(--risk-yellow))]' : 'text-[hsl(var(--risk-green))]'}`}>
-          {value}{unit}
+          {typeof value === 'number' ? Math.round(value * 10) / 10 : value}{unit}
         </span>
       </div>
       <div className="text-[9px] text-muted-foreground mt-0.5">{source}</div>

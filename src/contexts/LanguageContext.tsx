@@ -96,6 +96,9 @@ const translations: Record<string, Record<Lang, string>> = {
   'sensor.temp': { mr: 'तापमान', en: 'Temperature' },
   'sensor.battery': { mr: 'बॅटरी', en: 'Battery' },
   'sensor.source': { mr: 'स्रोत', en: 'Source' },
+  'sensor.humidity': { mr: 'आर्द्रता', en: 'Humidity' },
+  'sensor.waterDepth': { mr: 'पाणी खोली (अल्ट्रासोनिक)', en: 'Water Depth (Ultrasonic)' },
+  'sensor.mpu6050': { mr: 'MPU6050 फॉलबॅक', en: 'MPU6050 Fallback' },
 
   // FleetEye
   'fleet.jetting': { mr: 'जेटिंग मशीन', en: 'Jetting Machine' },
