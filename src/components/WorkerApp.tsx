@@ -559,7 +559,7 @@ const WorkerApp: React.FC = () => {
 
             {/* I am on-site button */}
             <button
-              onClick={() => setShiftPhase('onsite')}
+              onClick={startProbing}
               className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               <MapPin className="h-5 w-5" />
