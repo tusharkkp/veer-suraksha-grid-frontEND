@@ -1,6 +1,26 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 // Types
+export interface ProbeSensorData {
+  h2s: number;
+  ch4: number;
+  co: number;
+  temp: number;
+  humidity: number;
+  waterDepth: number; // ultrasonic
+}
+
+export interface GuardSensorData {
+  h2s: number;
+  ch4: number;
+  co: number;
+  o2: number;
+  temp: number;
+  humidity: number;
+  mpu6050Fallback: boolean;
+  battery: number;
+}
+
 export interface SensorData {
   h2s: number;
   ch4: number;
@@ -8,6 +28,9 @@ export interface SensorData {
   o2: number;
   temp: number;
   battery: number;
+  humidity: number;
+  waterDepth: number;
+  mpu6050Fallback: boolean;
 }
 
 export type RiskLevel = 'high' | 'medium' | 'low';
@@ -81,53 +104,53 @@ export interface ChatMessage {
   isAdmin: boolean;
 }
 
-// Initial data
+// Initial data — updated zone names
 const initialAssets: Asset[] = [
   {
-    id: 'SMC-MH-001', name: 'Manhole - Hotgi Road Industrial', nameMr: 'मॅनहोल - होतगी रोड औद्योगिक',
-    location: 'Hotgi Road Industrial Area', locationMr: 'होतगी रोड औद्योगिक क्षेत्र',
-    lat: 17.6599, lng: 75.9064, zone: 'red', zoneType: 'Industrial', zoneTypeMr: 'औद्योगिक',
-    riskLevel: 'high', sensors: { h2s: 18, ch4: 3.2, co: 28, o2: 18.5, temp: 34, battery: 82 },
+    id: 'SMC-MH-001', name: 'Manhole - MIDC, Sainath Nagar (Balaji Amines)', nameMr: 'मॅनहोल - MIDC, सईनाथ नगर (बालाजी अमाइन्स)',
+    location: 'MIDC, Sainath Nagar', locationMr: 'MIDC, सईनाथ नगर',
+    lat: 17.6599, lng: 75.9064, zone: 'red', zoneType: 'Chemical / Industrial', zoneTypeMr: 'रासायनिक / औद्योगिक',
+    riskLevel: 'high', sensors: { h2s: 18, ch4: 3.2, co: 28, o2: 18.5, temp: 34, battery: 82, humidity: 78, waterDepth: 1.8, mpu6050Fallback: false },
     assignedWorker: 'W-003', approvalStatus: 'pending', taskRoute: 'machine', machineRequired: true,
     history: []
   },
   {
-    id: 'SMC-MH-002', name: 'Manhole - MIDC Chemical Zone', nameMr: 'मॅनहोल - MIDC रासायनिक क्षेत्र',
-    location: 'MIDC Phase II', locationMr: 'MIDC फेज II',
+    id: 'SMC-MH-002', name: 'Manhole - Mangalwarpet (A2Z Chemicals)', nameMr: 'मॅनहोल - मंगळवारपेठ (A2Z केमिकल्स)',
+    location: 'Mangalwarpet, A2Z Chemicals', locationMr: 'मंगळवारपेठ, A2Z केमिकल्स',
     lat: 17.6450, lng: 75.9200, zone: 'red', zoneType: 'Chemical', zoneTypeMr: 'रासायनिक',
-    riskLevel: 'high', sensors: { h2s: 22, ch4: 4.1, co: 35, o2: 17.2, temp: 36, battery: 74 },
+    riskLevel: 'high', sensors: { h2s: 22, ch4: 4.1, co: 35, o2: 17.2, temp: 36, battery: 74, humidity: 82, waterDepth: 2.5, mpu6050Fallback: false },
     assignedWorker: 'W-005', approvalStatus: 'pending', taskRoute: 'machine', machineRequired: true,
     history: []
   },
   {
-    id: 'SMC-MH-003', name: 'Manhole - Main Market Road', nameMr: 'मॅनहोल - मुख्य बाजार रस्ता',
-    location: 'Main Market, Mangalwar Peth', locationMr: 'मुख्य बाजार, मंगळवार पेठ',
-    lat: 17.6720, lng: 75.9120, zone: 'yellow', zoneType: 'Commercial', zoneTypeMr: 'व्यापारी',
-    riskLevel: 'medium', sensors: { h2s: 8, ch4: 1.5, co: 12, o2: 19.8, temp: 31, battery: 91 },
-    assignedWorker: 'W-001', approvalStatus: 'approved', taskRoute: 'machine', machineRequired: false,
+    id: 'SMC-MH-003', name: 'Manhole - Shivajinagar (JPS Chemicals Pvt Ltd)', nameMr: 'मॅनहोल - शिवाजीनगर (JPS केमिकल्स प्रा. लि.)',
+    location: 'Shivajinagar, JPS Chemicals Pvt Ltd', locationMr: 'शिवाजीनगर, JPS केमिकल्स प्रा. लि.',
+    lat: 17.6720, lng: 75.9120, zone: 'red', zoneType: 'Chemical / Industrial', zoneTypeMr: 'रासायनिक / औद्योगिक',
+    riskLevel: 'high', sensors: { h2s: 16, ch4: 2.8, co: 22, o2: 18.0, temp: 33, battery: 88, humidity: 75, waterDepth: 1.5, mpu6050Fallback: false },
+    assignedWorker: 'W-001', approvalStatus: 'pending', taskRoute: 'machine', machineRequired: true,
     history: []
   },
   {
-    id: 'SMC-MH-004', name: 'Manhole - Akkalkot Road Mixed', nameMr: 'मॅनहोल - अक्कलकोट रोड मिश्र',
-    location: 'Akkalkot Road Mixed Use', locationMr: 'अक्कलकोट रोड मिश्र वापर',
-    lat: 17.6550, lng: 75.9300, zone: 'yellow', zoneType: 'Mixed-use', zoneTypeMr: 'मिश्र-वापर',
-    riskLevel: 'medium', sensors: { h2s: 6, ch4: 1.1, co: 9, o2: 20.1, temp: 30, battery: 88 },
+    id: 'SMC-MH-004', name: 'Manhole - Akkalkot Road Industrial', nameMr: 'मॅनहोल - अक्कलकोट रोड औद्योगिक',
+    location: 'Akkalkot Road Industrial Area', locationMr: 'अक्कलकोट रोड औद्योगिक क्षेत्र',
+    lat: 17.6550, lng: 75.9300, zone: 'yellow', zoneType: 'Industrial', zoneTypeMr: 'औद्योगिक',
+    riskLevel: 'medium', sensors: { h2s: 6, ch4: 1.1, co: 9, o2: 20.1, temp: 30, battery: 88, humidity: 65, waterDepth: 0.8, mpu6050Fallback: false },
     assignedWorker: 'W-007', approvalStatus: 'pending', taskRoute: 'pending', machineRequired: false,
     history: []
   },
   {
-    id: 'SMC-MH-005', name: 'Manhole - Siddheshwar Peth Residential', nameMr: 'मॅनहोल - सिद्धेश्वर पेठ निवासी',
-    location: 'Siddheshwar Peth', locationMr: 'सिद्धेश्वर पेठ',
-    lat: 17.6780, lng: 75.9050, zone: 'green', zoneType: 'Residential', zoneTypeMr: 'निवासी',
-    riskLevel: 'low', sensors: { h2s: 2, ch4: 0.3, co: 3, o2: 20.8, temp: 28, battery: 95 },
+    id: 'SMC-MH-005', name: 'Manhole - Laxmi Nagar Commercial', nameMr: 'मॅनहोल - लक्ष्मी नगर व्यापारी',
+    location: 'Laxmi Nagar', locationMr: 'लक्ष्मी नगर',
+    lat: 17.6780, lng: 75.9050, zone: 'yellow', zoneType: 'Commercial', zoneTypeMr: 'व्यापारी',
+    riskLevel: 'medium', sensors: { h2s: 7, ch4: 1.3, co: 11, o2: 19.9, temp: 29, battery: 92, humidity: 60, waterDepth: 0.5, mpu6050Fallback: false },
     assignedWorker: 'W-002', approvalStatus: 'approved', taskRoute: 'manual', machineRequired: false,
     history: []
   },
   {
-    id: 'SMC-MH-006', name: 'Manhole - Kumatha Naka Residential', nameMr: 'मॅनहोल - कुमठा नाका निवासी',
-    location: 'Kumatha Naka', locationMr: 'कुमठा नाका',
+    id: 'SMC-MH-006', name: 'Manhole - Siddheshwar Peth Residential', nameMr: 'मॅनहोल - सिद्धेश्वर पेठ निवासी',
+    location: 'Siddheshwar Peth', locationMr: 'सिद्धेश्वर पेठ',
     lat: 17.6650, lng: 75.8980, zone: 'green', zoneType: 'Residential', zoneTypeMr: 'निवासी',
-    riskLevel: 'low', sensors: { h2s: 1.5, ch4: 0.2, co: 2, o2: 20.9, temp: 27, battery: 97 },
+    riskLevel: 'low', sensors: { h2s: 1.5, ch4: 0.2, co: 2, o2: 20.9, temp: 27, battery: 97, humidity: 55, waterDepth: 0.3, mpu6050Fallback: false },
     assignedWorker: null, approvalStatus: 'approved', taskRoute: 'manual', machineRequired: false,
     history: []
   },
@@ -174,6 +197,7 @@ interface SystemContextType {
   clearEmergency: () => void;
   sendChat: (msg: string, msgMr: string, isAdmin: boolean) => void;
   toggleWorkerPPE: (workerId: string, item: keyof Worker['ppeChecklist']) => void;
+  addTask: (assetId: string, name: string, nameMr: string) => void;
 }
 
 const SystemContext = createContext<SystemContextType>({} as SystemContextType);
@@ -211,9 +235,11 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           o2: fluctuate(asset.sensors.o2, 0.3, 15, 21),
           temp: fluctuate(asset.sensors.temp, 0.5, 20, 45),
           battery: fluctuate(asset.sensors.battery, 0.2, 0, 100),
+          humidity: fluctuate(asset.sensors.humidity, 2, 30, 99),
+          waterDepth: fluctuate(asset.sensors.waterDepth, 0.2, 0, 5),
+          mpu6050Fallback: Math.random() < 0.02, // rare fallback trigger
         };
 
-        // Determine dynamic risk
         let riskLevel: RiskLevel = asset.riskLevel;
         if (newSensors.h2s > 15 || newSensors.ch4 > 3 || newSensors.co > 25 || newSensors.o2 < 18) {
           riskLevel = 'high';
@@ -251,7 +277,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           source: 'System',
         });
       }
-      // Random machine status change
       if (eventCounterRef.current % 5 === 0) {
         setMachines(prev => {
           const idx = Math.floor(Math.random() * prev.length);
@@ -326,10 +351,14 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }));
   }, []);
 
+  const addTask = useCallback((assetId: string, name: string, nameMr: string) => {
+    addEvent({ type: 'task', message: `New task created: ${name} at ${assetId}`, messageMr: `नवीन कार्य तयार: ${nameMr} - ${assetId}`, severity: 'info', source: 'Admin' });
+  }, [addEvent]);
+
   return (
     <SystemContext.Provider value={{
       assets, workers, machines, eventLog, chatMessages, activeEmergency, selectedAsset,
-      setSelectedAsset, approveTask, rejectTask, holdTask, triggerSOS, clearEmergency, sendChat, toggleWorkerPPE,
+      setSelectedAsset, approveTask, rejectTask, holdTask, triggerSOS, clearEmergency, sendChat, toggleWorkerPPE, addTask,
     }}>
       {children}
     </SystemContext.Provider>
